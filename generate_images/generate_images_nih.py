@@ -11,40 +11,40 @@ from tqdm import tqdm
 
 
 def test_sd():
-    model_path = "/data04/shared/moibhattacha/model_weights/diffusers_finetuning/stable_diffusion_v1_5_egc1_15k/"
+    model_path = "/path/to/stable_diffusion_v1_5_egc1_15k/"
     pipe = DiffusionPipeline.from_pretrained(model_path, torch_dtype=torch.float16, revision="fp16")
 
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
     pipe = pipe.to("cuda")
 
-    df = pd.read_csv('/home/moibhattacha/gazecontrolnet/temp/reports/nih_reports_trainval.csv')
+    df = pd.read_csv('/path/to/nih_reports_trainval.csv')
     for name, text in tqdm(zip(df['name'], df['report'])):
         name = name.split('/')[-1]
 
         generator = torch.manual_seed(3407)
         image = pipe(text, num_inference_steps=50, generator=generator).images[0]
 
-        image.save("/data06/shared/moibhattacha/gazecontrolnet/generated_images/nih/sd/{}".format(name))
+        image.save("/path/to/nih/sd/{}".format(name))
 
 def test_roentgen():
-    model_path = "/data04/shared/moibhattacha/model_weights/diffusers_finetuning/roentgen/"
+    model_path = "/path/to/roentgen/"
     pipe = DiffusionPipeline.from_pretrained(model_path, torch_dtype=torch.float16, revision="fp16")
 
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
     pipe = pipe.to("cuda")
 
-    df = pd.read_csv('/home/moibhattacha/gazecontrolnet/temp/reports/nih_reports_trainval.csv')
+    df = pd.read_csv('/path/to/nih_reports_trainval.csv')
     for name, text in tqdm(zip(df['name'], df['report'])):
         name = name.split('/')[-1]
 
         generator = torch.manual_seed(3407)
         image = pipe(text, num_inference_steps=50, generator=generator).images[0]
 
-        image.save("/data06/shared/moibhattacha/gazecontrolnet/generated_images/nih/roentgen/{}".format(name))
+        image.save("/path/to/nih/roentgen/{}".format(name))
 
 def test_controlnet():
-    base_model_path = "/data04/shared/moibhattacha/model_weights/diffusers_finetuning/stable_diffusion_v1_5_egc1_15k/"
-    controlnet_path = "/data04/shared/moibhattacha/model_weights/diffusers_finetuning/controlnet_egc1_sdv1-5_canny/"
+    base_model_path = "/path/to/stable_diffusion_v1_5_egc1_15k/"
+    controlnet_path = "/path/to/controlnet_egc1_sdv1-5_canny/"
 
     controlnet = ControlNetModel.from_pretrained(controlnet_path, torch_dtype=torch.float16)
     pipe = StableDiffusionControlNetPipeline.from_pretrained(base_model_path, controlnet=controlnet, torch_dtype=torch.float16)
@@ -58,7 +58,7 @@ def test_controlnet():
     pipe.requires_safety_checker = False
     pipe = pipe.to("cuda:0")
 
-    df = pd.read_csv('/home/moibhattacha/gazecontrolnet/temp/reports/nih_reports_trainval.csv')
+    df = pd.read_csv('/path/to/nih_reports_trainval.csv')
     for name, text in tqdm(zip(df['name'], df['report'])):
         image = load_image(name)
         
@@ -79,7 +79,7 @@ def test_controlnet():
             text, num_inference_steps=50, generator=generator, image=control_image, controlnet_conditioning_scale=0.5, #image=resized_image, control_image=control_image
             negative_prompt="monochrome, lowres, bad anatomy, worst quality, low quality",
         ).images[0]
-        image.save("/data06/shared/moibhattacha/gazecontrolnet/generated_images/nih/controlnet/{}".format(name))
+        image.save("/path/to/nih/controlnet/{}".format(name))
 
 def preprocess_control_image(image_temp):
         image_temp = np.array(image_temp)
@@ -88,11 +88,11 @@ def preprocess_control_image(image_temp):
         return image_temp
 
 def test_multicontrolnet():
-    base_model_path = "/data04/shared/moibhattacha/model_weights/diffusers_finetuning/stable_diffusion_v1_5_egc1_15k/"
-    controlnet_path_canny = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_canny/"
-    controlnet_path_sobel = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_sobel/"
-    controlnet_path_gl = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_gl/"
-    controlnet_path_segmentation = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_segmentation/"
+    base_model_path = "/path/to/stable_diffusion_v1_5_egc1_15k/"
+    controlnet_path_canny = "/path/to/controlnet_egc2_canny/"
+    controlnet_path_sobel = "/path/to/controlnet_egc2_sobel/"
+    controlnet_path_gl = "/path/to/controlnet_egc2_gl/"
+    controlnet_path_segmentation = "/path/to/controlnet_egc2_segmentation/"
 
     controlnet_canny = ControlNetModel.from_pretrained(controlnet_path_canny, torch_dtype=torch.float16).to("cuda")
     controlnet_sobel = ControlNetModel.from_pretrained(controlnet_path_sobel, torch_dtype=torch.float16).to("cuda")
@@ -108,14 +108,14 @@ def test_multicontrolnet():
     pipe.requires_safety_checker = False
     pipe = pipe.to("cuda:0")
 
-    df = pd.read_csv('/home/moibhattacha/gazecontrolnet/temp/reports/chexpert_reports.csv')
+    df = pd.read_csv('/path/to/chexpert_reports.csv')
     for name, text in tqdm(zip(df['name'], df['report'])):
         name = name.split('/')[1]
 
-        control_image_canny = load_image("/home/moibhattacha/gazecontrolnet/generated_images_radiomics/chexpert_multicontrolnet/canny/{}.png".format(name))
-        control_image_sobel = load_image("/home/moibhattacha/gazecontrolnet/generated_images_radiomics/chexpert_multicontrolnet/sobel/{}.png".format(name))
-        control_image_gl = load_image("/home/moibhattacha/gazecontrolnet/generated_images_radiomics/chexpert_multicontrolnet/gl/{}.png".format(name))
-        control_image_segmentation = load_image("/home/moibhattacha/gazecontrolnet/generated_images_radiomics/chexpert_multicontrolnet/segmentation/{}.png".format(name))
+        control_image_canny = load_image("/path/to/canny/{}.png".format(name))
+        control_image_sobel = load_image("/path/to/sobel/{}.png".format(name))
+        control_image_gl = load_image("/path/to/gl/{}.png".format(name))
+        control_image_segmentation = load_image("/path/to/segmentation/{}.png".format(name))
 
         control_image = [
             preprocess_control_image(control_image_canny), 
@@ -128,7 +128,7 @@ def test_multicontrolnet():
             text, num_inference_steps=50, generator=generator, image=control_image, controlnet_conditioning_scale=0.01, #image=resized_image, control_image=control_image
             negative_prompt="monochrome, lowres, bad anatomy, worst quality, low quality",
         ).images[0]
-        image.save("/data05/shared/moibhattacha/gazecontrolnet/generated_images/chexpert/multicontrolnet/{}.png".format(name))
+        image.save("/path/to/multicontrolnet/{}.png".format(name))
         
 
 if __name__ == '__main__':
@@ -138,46 +138,3 @@ if __name__ == '__main__':
     # test_roentgen()
     # test_controlnet()
     # test_multicontrolnet()
-
-    # image_name = 'ffebc425-86614d95-5bb96eaa-da4060e0-1136f220.png'
-    # controls = ['gl', 'canny']
-    # text = "right port catheter tip projects over the mid svc. no acute cardiopulmonary findings. no acute osseous abnormality."
-
-    # test_gazecontrolnet(image_name, text, controls)
-
-    # import imageio
-    # from scipy import ndimage
-
-    # df = pd.read_csv('/home/moibhattacha/gazecontrolnet/temp/reports/nih_reports_trainval.csv')
-    # for name, text in tqdm(zip(df['name'], df['report'])):
-    #     image = load_image(name)
-        
-    #     name = name.split('/')[-1]
-
-    #     resized_image = np.array(image)
-    #     resized_image = cv2.resize(resized_image, (512, 512))
-    #     control_image = np.array(image)
-
-    #     #### gaussian laplacian ####
-    #     xray_image_laplace_gaussian = ndimage.gaussian_laplace(control_image, sigma=1)
-    #     imageio.v3.imwrite('/data06/shared/moibhattacha/gazecontrolnet/generated_images_radiomics/nih_multicontrolnet/gl/{}'.format(name), xray_image_laplace_gaussian)
-
-    #     #### canny ####
-    #     low_threshold = 40
-    #     high_threshold = 50
-
-    #     image = cv2.Canny(control_image, low_threshold, high_threshold)
-    #     image = image[:, :, None]
-    #     image = np.concatenate([image, image, image], axis=2)
-    #     canny_image = Image.fromarray(image)
-    #     canny_image.save('/data06/shared/moibhattacha/gazecontrolnet/generated_images_radiomics/nih_multicontrolnet/canny/{}'.format(name))
-        
-    #     #### sobel ####
-    #     x_sobel = ndimage.sobel(control_image, axis=0)
-    #     y_sobel = ndimage.sobel(control_image, axis=1)
-    #     sobel = np.hypot(x_sobel, y_sobel)     
-    #     sobel_normalized = np.uint8((sobel / np.max(sobel)) * 255)
-    #     imageio.v3.imwrite('/data06/shared/moibhattacha/gazecontrolnet/generated_images_radiomics/nih_multicontrolnet/sobel/{}'.format(name), sobel_normalized)
-
-
-
