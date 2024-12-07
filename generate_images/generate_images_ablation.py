@@ -17,14 +17,14 @@ def preprocess_control_image(image_temp):
     image_temp = Image.fromarray(image_temp)
     return image_temp
 
-def test_gazecontrolnet():
-    base_model_path = "/data04/shared/moibhattacha/model_weights/diffusers_finetuning/stable_diffusion_v1_5_mimic_50k/"
+def test_radgazegen():
+    base_model_path = "path/to/stable_diffusion_v1_5_mimic_50k/"
 
-    controlnet_path_canny = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_canny/"
-    controlnet_path_sobel = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_sobel/"
-    controlnet_path_gl = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_gl/"
-    controlnet_path_segmentation = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_segmentation/"
-    controlnet_path_hva = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/gazecontrolnet/"
+    controlnet_path_canny = "path/to/controlnet_egc2_canny/"
+    controlnet_path_sobel = "path/to/controlnet_egc2_sobel/"
+    controlnet_path_gl = "path/to/controlnet_egc2_gl/"
+    controlnet_path_segmentation = "path/to/controlnet_egc2_segmentation/"
+    controlnet_path_hva = "path/to/gazecontrolnet/"
 
     controlnet_canny = ControlNetModel.from_pretrained(controlnet_path_canny, torch_dtype=torch.float16).to("cuda")
     controlnet_sobel = ControlNetModel.from_pretrained(controlnet_path_sobel, torch_dtype=torch.float16).to("cuda")
@@ -52,16 +52,16 @@ def test_gazecontrolnet():
 
     pipe = pipe.to("cuda:0")
 
-    df = pd.read_csv('/home/moibhattacha/gazecontrolnet/metadata_reflacx_multiple.csv')
+    df = pd.read_csv('path/to/metadata_reflacx_multiple.csv')
     for name, text in tqdm(zip(df['file_name'], df['text'])):
-        control_image_canny = load_image("/data05/shared/moibhattacha/multicontrolnet/eval_reflacx_canny/{}".format(name))
-        control_image_sobel = load_image("/data05/shared/moibhattacha/multicontrolnet/eval_reflacx_sobel/{}".format(name))
-        control_image_gl = load_image("/data05/shared/moibhattacha/multicontrolnet/eval_reflacx_gl/{}".format(name))
-        control_image_segmentation = load_image("/data05/shared/moibhattacha/multicontrolnet/eval_reflacx_segmentation/{}".format(name))
+        control_image_canny = load_image("path/to/eval_reflacx_canny/{}".format(name))
+        control_image_sobel = load_image("path/to/eval_reflacx_sobel/{}".format(name))
+        control_image_gl = load_image("path/to/eval_reflacx_gl/{}".format(name))
+        control_image_segmentation = load_image("path/to/eval_reflacx_segmentation/{}".format(name))
         try:
-            control_image_hva = load_image("/data06/shared/moibhattacha/gazecontrolnet/generated_images/eval_reflacx/{}".format(name))
+            control_image_hva = load_image("path/to/eval_reflacx/{}".format(name))
         except:
-            control_image_hva = load_image("/data06/shared/moibhattacha/gazecontrolnet/generated_images/eval_reflacx/{}".format(name_x))
+            control_image_hva = load_image("path/to/eval_reflacx/{}".format(name_x))
         name_x = name
         control_image = [
             preprocess_control_image(control_image_canny), 
@@ -77,12 +77,10 @@ def test_gazecontrolnet():
             controlnet_conditioning_scale=0.01,#[0.1, 0.1, 0.1, 0.1, 0.001],
             negative_prompt="monochrome, lowres, bad anatomy, worst quality, low quality",
         ).images[0]
-        image.save("/data05/shared/moibhattacha/gazecontrolnet/generated_images/reflacx/ablation_radcn/{}".format(name))
+        image.save("path/to/ablation_radcn/{}".format(name))
 
 if __name__ == '__main__':
     flag = 0    
-
-    # source activate diffusers_env
 
     test_gazecontrolnet()
 
