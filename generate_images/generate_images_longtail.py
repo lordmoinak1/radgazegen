@@ -10,13 +10,13 @@ from PIL import Image
 from tqdm import tqdm
 
 
-def test_gazecontrolnet(class_name):
-    base_model_path = "/data04/shared/moibhattacha/model_weights/diffusers_finetuning/stable_diffusion_v1_5_egc1_15k/"
-    controlnet_path_canny = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_canny/"
-    controlnet_path_sobel = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_sobel/"
-    controlnet_path_gl = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_gl/"
-    controlnet_path_segmentation = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_segmentation/"
-    controlnet_path_hva = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/gazecontrolnet/"
+def test_radgazegen(class_name):
+    base_model_path = "/path/to/stable_diffusion_v1_5_egc1_15k/"
+    controlnet_path_canny = "/path/to/controlnet_egc2_canny/"
+    controlnet_path_sobel = "/path/to/controlnet_egc2_sobel/"
+    controlnet_path_gl = "/path/to/controlnet_egc2_gl/"
+    controlnet_path_segmentation = "/path/to/controlnet_egc2_segmentation/"
+    controlnet_path_hva = "/path/to/gazecontrolnet/"
 
     controlnet_canny = ControlNetModel.from_pretrained(controlnet_path_canny, torch_dtype=torch.float16).to("cuda")
     controlnet_sobel = ControlNetModel.from_pretrained(controlnet_path_sobel, torch_dtype=torch.float16).to("cuda")
@@ -33,8 +33,7 @@ def test_gazecontrolnet(class_name):
     pipe.requires_safety_checker = False
     pipe = pipe.to("cuda:0")
 
-    # df = pd.read_csv('/home/moibhattacha/gazecontrolnet/temp/reports/chexpert_reports.csv')
-    df = pd.read_csv('/home/moibhattacha/gazecontrolnet/gazecontrolnet_mimic_{}_reports.csv'.format(class_name))
+    df = pd.read_csv('/path/to/gazecontrolnet_mimic_{}_reports.csv'.format(class_name))
     count = 0
     for canny, sobel, gl, segmentation, hva, text in tqdm(zip(df['canny'], df['sobel'], df['gl'], df['segmentation'], df['hva'], df['text'])):
         # image = load_image("/home/moibhattacha/gazecontrolnet/CheXpert/{}".format(name))
@@ -59,11 +58,11 @@ def test_gazecontrolnet(class_name):
         ).images[0]
         # image.save("/data05/shared/moibhattacha/gazecontrolnet/generated_images/reflacx/multicontrolnet_all/{}".format(name))
         count += 1
-        image.save("/data05/shared/moibhattacha/gazecontrolnet/generated_images/long_tailed/mimic/gazecontrolnet/{}/sample_{}.png".format(class_name, count))
+        image.save("/path/to/radgazegen/{}/sample_{}.png".format(class_name, count))
 
 def test_controlnet(class_name):
-    base_model_path = "/data04/shared/moibhattacha/model_weights/diffusers_finetuning/stable_diffusion_v1_5_egc1_15k/"
-    controlnet_path = "/data04/shared/moibhattacha/model_weights/diffusers_finetuning/controlnet_egc1_sdv1-5_canny/"
+    base_model_path = "/path/to/stable_diffusion_v1_5_egc1_15k/"
+    controlnet_path = "/path/to/controlnet_egc1_sdv1-5_canny/"
 
     controlnet = ControlNetModel.from_pretrained(controlnet_path, torch_dtype=torch.float16)
     pipe = StableDiffusionControlNetPipeline.from_pretrained(base_model_path, controlnet=controlnet, torch_dtype=torch.float16)
@@ -75,7 +74,7 @@ def test_controlnet(class_name):
     pipe.requires_safety_checker = False
     pipe = pipe.to("cuda:0")
 
-    df = pd.read_csv('/home/moibhattacha/gazecontrolnet/mimic_{}_reports.csv'.format(class_name))
+    df = pd.read_csv('/path/to/mimic_{}_reports.csv'.format(class_name))
     count = 0
     for name, text in tqdm(zip(df['canny'], df['text'])):
         control_image = load_image(name)
@@ -88,7 +87,7 @@ def test_controlnet(class_name):
             negative_prompt="monochrome, lowres, bad anatomy, worst quality, low quality",
         ).images[0]
         count += 1
-        image.save("/data05/shared/moibhattacha/gazecontrolnet/generated_images/long_tailed/mimic/controlnet/{}/sample_{}.png".format(class_name, count))
+        image.save("/path/to/controlnet/{}/sample_{}.png".format(class_name, count))
 
 def preprocess_control_image(image_temp):
         image_temp = np.array(image_temp)
@@ -97,11 +96,11 @@ def preprocess_control_image(image_temp):
         return image_temp
 
 def test_multicontrolnet(class_name):
-    base_model_path = "/data04/shared/moibhattacha/model_weights/diffusers_finetuning/stable_diffusion_v1_5_egc1_15k/"
-    controlnet_path_canny = "//data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_canny/"
-    controlnet_path_sobel = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_sobel/"
-    controlnet_path_gl = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_gl/"
-    controlnet_path_segmentation = "/data05/shared/moibhattacha/model_weights/eccv_gazecontrolnet/controlnet_egc2_segmentation/"
+    base_model_path = "/path/to/stable_diffusion_v1_5_egc1_15k/"
+    controlnet_path_canny = "/path/to/controlnet_egc2_canny/"
+    controlnet_path_sobel = "/path/to/controlnet_egc2_sobel/"
+    controlnet_path_gl = "/path/to/controlnet_egc2_gl/"
+    controlnet_path_segmentation = "/path/to/controlnet_egc2_segmentation/"
 
     controlnet_canny = ControlNetModel.from_pretrained(controlnet_path_canny, torch_dtype=torch.float16).to("cuda")
     controlnet_sobel = ControlNetModel.from_pretrained(controlnet_path_sobel, torch_dtype=torch.float16).to("cuda")
@@ -117,30 +116,28 @@ def test_multicontrolnet(class_name):
     pipe.requires_safety_checker = False
     pipe = pipe.to("cuda:0")
 
-    # df = pd.read_csv('/home/moibhattacha/gazecontrolnet/temp/reports/chexpert_reports.csv')
-    df = pd.read_csv('/home/moibhattacha/gazecontrolnet/mimic_{}_reports.csv'.format(class_name))
+    df = pd.read_csv('/path/to/mimic_{}_reports.csv'.format(class_name))
     count = 0
     for canny, segmentation, text in tqdm(zip(df['canny'], df['segmentation'], df['text'])):
-        # image = load_image("/home/moibhattacha/gazecontrolnet/CheXpert/{}".format(name))
         control_image_canny = load_image(canny)
-        # control_image_sobel = load_image("/data05/shared/moibhattacha/multicontrolnet/eval_reflacx_sobel/{}".format(name))
-        # control_image_gl = load_image("/data05/shared/moibhattacha/multicontrolnet/eval_reflacx_gl/{}".format(name))
+        control_image_sobel = load_image("/data05/shared/moibhattacha/multicontrolnet/eval_reflacx_sobel/{}".format(name))
+        control_image_gl = load_image("/data05/shared/moibhattacha/multicontrolnet/eval_reflacx_gl/{}".format(name))
         control_image_segmentation = load_image(segmentation)
 
         control_image = [
             preprocess_control_image(control_image_canny), 
-            # preprocess_control_image(control_image_sobel), 
-            # preprocess_control_image(control_image_gl), 
+            preprocess_control_image(control_image_sobel), 
+            preprocess_control_image(control_image_gl), 
             preprocess_control_image(control_image_segmentation),]
 
         generator = torch.manual_seed(3407)
         image = pipe(
-            text, num_inference_steps=50, generator=generator, image=control_image, #controlnet_conditioning_scale=0.5, #image=resized_image, control_image=control_image
+            text, num_inference_steps=50, generator=generator, image=control_image, 
+            #controlnet_conditioning_scale=0.5, #image=resized_image, control_image=control_image #### use based on preference 
             negative_prompt="monochrome, lowres, bad anatomy, worst quality, low quality",
         ).images[0]
-        # image.save("/data05/shared/moibhattacha/gazecontrolnet/generated_images/reflacx/multicontrolnet_all/{}".format(name))
         count += 1
-        image.save("/data05/shared/moibhattacha/gazecontrolnet/generated_images/long_tailed/mimic/multicontrolnet/{}/sample_{}.png".format(class_name, count))
+        image.save("/path/to/multicontrolnet/{}/sample_{}.png".format(class_name, count))
 
 if __name__ == '__main__':
     flag = 0
@@ -163,47 +160,16 @@ if __name__ == '__main__':
     # test_multicontrolnet('subcutaneousemphysema')
     # test_multicontrolnet('pneumoperitoneum')
 
-    # test_gazecontrolnet('tortuousaorta')
-    # test_gazecontrolnet('calcificationoftheaorta')
-    # test_gazecontrolnet('pleuralother')
-    # test_gazecontrolnet('consolidation')
-    # test_gazecontrolnet('enlargedcardiomediastinum')
-    # test_gazecontrolnet('fracture')
+    # test_radgazegen('tortuousaorta')
+    # test_radgazegen('calcificationoftheaorta')
+    # test_radgazegen('pleuralother')
+    # test_radgazegen('consolidation')
+    # test_radgazegen('enlargedcardiomediastinum')
+    # test_radgazegen('fracture')
 
-    # test_gazecontrolnet('pneumomediastinum')
-    # test_gazecontrolnet('subcutaneousemphysema')
-    test_gazecontrolnet('pneumoperitoneum')
+    # test_radgazegen('pneumomediastinum')
+    # test_radgazegen('subcutaneousemphysema')
+    # test_radgazegen('pneumoperitoneum')
 
-    # ####-####
-    # middle_classes = ['tortuousaorta', 'calcificationoftheaorta', 'pleuralother', 'consolidation', 'enlargedcardiomediastinum', 'fracture']
-    # middle_classes = ['pneumomediastinum', 'subcutaneousemphysema', 'pneumoperitoneum']
-    # for middle_class in middle_classes:
-    #     df = pd.read_csv('/home/moibhattacha/LongTailCXR/{}_reports.csv'.format(middle_class))
-    #     df = df.drop(columns='Unnamed: 0')
-
-    #     text_list = df['report'].values.tolist()
-    #     canny_list = os.listdir('/data05/shared/moibhattacha/multicontrolnet/controlnet_combined_canny/conditioning_images')
-    #     hva_list = os.listdir('/data05/shared/moibhattacha/gazecontrolnet/hypothesis')
-
-    #     random_sample_list = []
-    #     while len(random_sample_list) < 1200:
-    #         random_text = np.random.choice(np.array(text_list))
-    #         random_canny = np.random.choice(np.array(canny_list))
-    #         random_hva = np.random.choice(np.array(hva_list))
-
-    #         random_sample = {
-    #             'canny': '/data05/shared/moibhattacha/multicontrolnet/controlnet_combined_canny/conditioning_images/'+random_canny,
-    #             'sobel': '/data05/shared/moibhattacha/multicontrolnet/controlnet_combined_sobel/conditioning_images/'+random_canny,
-    #             'gl': '/data05/shared/moibhattacha/multicontrolnet/controlnet_combined_gl/conditioning_images/'+random_canny,
-    #             'segmentation': '/data05/shared/moibhattacha/multicontrolnet/controlnet_combined_segmentation/conditioning_images/'+random_canny,
-    #             'hva': '/data05/shared/moibhattacha/gazecontrolnet/hypothesis/'+random_hva,
-    #             'text': random_text
-    #         }
-
-    #         random_sample_list.append(random_sample)
-
-    #     df = pd.DataFrame(random_sample_list)
-    #     df.to_csv('/home/moibhattacha/gazecontrolnet/gazecontrolnet_mimic_{}_reports.csv'.format(middle_class))
-    #     # break
 
 
