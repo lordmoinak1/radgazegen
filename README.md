@@ -3,7 +3,7 @@
 # RadGazeGen: Radiomics and Gaze-guided Chest X-ray Generation using Diffusion Models
 [Moinak Bhattacharya](https://sites.google.com/stonybrook.edu/moinakbhattacharya), [Gagandeep Singh](https://www.columbiaradiology.org/profile/gagandeep-singh-mbbs), [Shubham Jain](https://www3.cs.stonybrook.edu/~jain/), [Prateek Prasanna](https://you.stonybrook.edu/imaginelab/)
 
-Under review.
+Journal of Medical Imaging, 2026.
 
 ## To do
 - Google Colab notebook will be available soon...
