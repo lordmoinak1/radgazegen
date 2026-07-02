@@ -5,18 +5,23 @@
 
 Journal of Medical Imaging, 2026.
 
-## To do
-- Google Colab notebook will be available soon...
-- full pipeline to be added, weights are huge (trying to upload to gdrive/box)...
-  
+## How to generate images?
+Weights: [Link](https://drive.google.com/drive/folders/19kfULlZMT7NvGneMRjArvvJgKCk2v3I5?usp=drive_link)
+```
+python3 generate_images/generate_images.py
+```
+
 ## Citation
 If you find this repository useful, please consider giving a star :star: and cite the following
 ```
-@article{bhattacharya2024radgazegen,
-  title={RadGazeGen: Radiomics and Gaze-guided Medical Image Generation using Diffusion Models},
+@article{bhattacharya2026radgazegen,
+  title={RadGazeGen: radiomics and gaze-guided chest X-ray generation using diffusion models},
   author={Bhattacharya, Moinak and Singh, Gagandeep and Jain, Shubham and Prasanna, Prateek},
-  journal={arXiv preprint arXiv:2410.00307},
-  year={2024}
+  journal={Journal of Medical Imaging},
+  volume={13},
+  number={Suppl 1},
+  pages={S11205},
+  year={2026}
 }
 ```
 
